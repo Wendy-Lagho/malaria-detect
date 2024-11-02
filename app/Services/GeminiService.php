@@ -15,7 +15,7 @@ class GeminiService
 
     public function __construct()
     {
-        $this->model = 'gemini-pro-vision';
+        $this->model = 'gemini-1.5-flash';
         $this->apiKey = config('services.google.gemini.key');
         $this->client = new Client([
             'base_uri' => 'https://generativelanguage.googleapis.com/v1beta/',

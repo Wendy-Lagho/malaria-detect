@@ -51,58 +51,69 @@
     
     @push('scripts')
         <script>
-        document.addEventListener('DOMContentLoaded', function() {
-        const uploadArea = document.getElementById('upload-area');
-        const imageInput = document.getElementById('image-input');
-        const imagePreview = document.getElementById('image-preview');
-        const noPreview = document.getElementById('no-preview');
-        const form = document.getElementById('analysis-form');
+            document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('upload-area');
+            const imageInput = document.getElementById('image-input');
+            const imagePreview = document.getElementById('image-preview');
+            const noPreview = document.getElementById('no-preview');
+            const form = document.getElementById('analysis-form');
 
-        uploadArea.addEventListener('click', () => imageInput.click());
+            uploadArea.addEventListener('click', () => imageInput.click());
 
-        imageInput.addEventListener('change', function(e) {
-            if (e.target.files && e.target.files[0]) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    imagePreview.src = e.target.result;
-                    imagePreview.classList.remove('hidden');
-                    noPreview.classList.add('hidden');
-                }
-                
-                reader.readAsDataURL(e.target.files[0]);
-            }
-        });
-
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(form);
-            
-            try {
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            imageInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.classList.remove('hidden');
+                        noPreview.classList.add('hidden');
                     }
-                });
-
-                const result = await response.json();
-                console.log(result); // Log the response for debugging
-
-                if (result.success) {
-                    window.location.href = `/analysis/${result.analysis_id}`;
-                } else {
-                    // Handle error
-                    alert(result.message || 'Analysis failed. Please try again.');
+                    
+                    reader.readAsDataURL(e.target.files[0]);
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            }
-        });
-        });
+            });
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const submitButton = form.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.textContent = 'Processing...';
+                
+                try {
+                    const formData = new FormData(form);
+                    
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        credentials: 'same-origin'
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.message || 'Server error occurred');
+                    }
+
+                    if (result.success) {
+                        window.location.href = result.redirect_url;
+                    } else {
+                        throw new Error(result.message || 'Analysis failed');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert(error.message || 'An error occurred. Please try again.');
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Analyze Image';
+                }
+            });
+            }); 
         </script>
     @endpush
 </x-app-layout>

@@ -36,6 +36,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Reports route
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
+    Route::get('/reports/{analysis}', [ReportsController::class, 'show'])->name('reports.show');
+    Route::post('/reports/{analysis}/generate', [ReportsController::class, 'generatePDF'])->name('reports.generate');
+    Route::get('/reports/{analysis}/download', [ReportsController::class, 'download'])->name('reports.download');
 });
 
 // Logout route

@@ -32,73 +32,90 @@ class AnalysisController extends Controller
      * Process a new analysis request
      */
     public function store(Request $request)
-    {
-        // Validate the request
-        $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:5120', // 5MB max
+{
+    // Validate the request
+    $request->validate([
+        'image' => 'required|image|mimes:jpeg,png,jpg|max:5120', // 5MB max
+    ]);
+
+    try {
+        DB::beginTransaction();
+
+        // Store the image
+        $imagePath = $request->file('image')->store('analyses');
+
+        // Create analysis record
+        $analysis = Analysis::create([
+            'image_path' => $imagePath,
+            'status' => 'processing',
+            'user_id' => Auth::id(),
         ]);
 
-        try {
-            DB::beginTransaction();
+        // Process the image with Gemini API
+        $results = $this->geminiService->analyzeMalariaImage($imagePath);
+        Log::info('Analysis results: ', $results);
 
-            // Store the image
-            $imagePath = $request->file('image')->store('analyses');
+        // Update analysis with results
+        $analysis->update([
+            'result_data' => json_encode($results),
+            'confidence_score' => $results['confidence'],
+            'result' => $results['detection'] ? 'positive' : 'negative',
+            'status' => 'completed',
+            'processed_at' => now(),
+            'processing_time_ms' => time() - strtotime($analysis->created_at),
+        ]);
 
-            // Create analysis record
-            $analysis = Analysis::create([
-                'image_path' => $imagePath,
-                'status' => 'processing',
-                'user_id' => Auth::id(),
+        DB::commit();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'analysis_id' => $analysis->id,
+                'redirect_url' => $results['confidence'] < 70 
+                    ? route('analysis.review', $analysis->id)
+                    : route('analysis.show', $analysis->id)
             ]);
-
-            // Process the image with Gemini API
-            $results = $this->geminiService->analyzeMalariaImage($imagePath);
-            Log::info('Analysis results: ', $results);
-
-            // Update analysis with results
-            $analysis->update([
-                'result_data' => json_encode($results),
-                'confidence_score' => $results['confidence'],
-                'result' => $results['detection'] ? 'positive' : 'negative',
-                'status' => 'completed',
-                'processed_at' => now(),
-                'processing_time_ms' => time() - strtotime($analysis->created_at),
-            ]);
-
-            DB::commit();
-
-            // Redirect based on confidence level
-            if ($results['confidence'] < 70) {
-                return redirect()->route('analyses.review', $analysis)
-                    ->with('warning', 'Analysis completed but requires review due to low confidence.');
-            }
-
-            return redirect()->route('', $analysis)
-                ->with('success', 'Analysis completed successfully.');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Analysis failed: ' . $e->getMessage(), [
-                'user_id' => Auth::id(),
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            // Clean up uploaded file if exists
-            if (isset($imagePath) && Storage::exists($imagePath)) {
-                Storage::delete($imagePath);
-            }
-
-            // Update analysis status if record was created
-            if (isset($analysis)) {
-                $analysis->update([
-                    'status' => 'failed',
-                    'error_message' => $e->getMessage()
-                ]);
-            }
-
-            return back()->withErrors(['error' => 'Analysis failed: ' . $e->getMessage()]);
         }
+
+        // Redirect based on confidence level for non-AJAX requests
+        if ($results['confidence'] < 70) {
+            return redirect()->route('analysis.review', $analysis)
+                ->with('warning', 'Analysis completed but requires review due to low confidence.');
+        }
+
+        return redirect()->route('analysis.show', $analysis)
+            ->with('success', 'Analysis completed successfully.');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Analysis failed: ' . $e->getMessage(), [
+            'user_id' => Auth::id(),
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        // Clean up uploaded file if exists
+        if (isset($imagePath) && Storage::exists($imagePath)) {
+            Storage::delete($imagePath);
+        }
+
+        // Update analysis status if record was created
+        if (isset($analysis)) {
+            $analysis->update([
+                'status' => 'failed',
+                'error_message' => $e->getMessage()
+            ]);
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Analysis failed: ' . $e->getMessage()
+            ], 422);
+        }
+
+        return back()->withErrors(['error' => 'Analysis failed: ' . $e->getMessage()]);
+    }
     }
 
     /**
@@ -117,7 +134,7 @@ class AnalysisController extends Controller
     {
         abort_if($analysis->confidence_score >= 70, 404);
         
-        return view('analyses.review', compact('analysis'));
+        return view('analysis.review', compact('analysis'));
     }
 
     /**
@@ -154,7 +171,7 @@ class AnalysisController extends Controller
     {
         try {
             // Generate PDF report
-            $pdf = PDF::loadView('analyses.report', compact('analysis'));
+            $pdf = PDF::loadView('analysis.report', compact('analysis'));
             
             // Store the report
             $reportPath = 'reports/' . $analysis->id . '_' . time() . '.pdf';
@@ -208,5 +225,30 @@ class AnalysisController extends Controller
             Log::error('Failed to delete analysis: ' . $e->getMessage());
             return back()->withErrors(['error' => 'Failed to delete analysis']);
         }
+    }
+    /**
+ * Display a listing of past analyses
+ */
+    public function index()
+    {
+    $analyses = Analysis::where('user_id', Auth::id())
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+
+    // Calculate statistics
+    $statistics = [
+        'total' => $analyses->total(),
+        'positive' => Analysis::where('user_id', Auth::id())
+            ->where('result', 'positive')
+            ->count(),
+        'negative' => Analysis::where('user_id', Auth::id())
+            ->where('result', 'negative')
+            ->count(),
+        'needs_review' => Analysis::where('user_id', Auth::id())
+            ->where('confidence_score', '<', 70)
+            ->count(),
+    ];
+
+    return view('analysis.index', compact('analyses', 'statistics'));
     }
 }
