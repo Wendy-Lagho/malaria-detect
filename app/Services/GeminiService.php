@@ -115,7 +115,7 @@ class GeminiService
     private function getMalariaAnalysisPrompt(): string
     {
         return "You are a medical image analysis expert specializing in malaria detection. 
-                Analyze this blood smear image for malaria parasites with extreme precision.
+                Analyze this blood smear image with extreme precision, identifying malaria parasites distinctly.
                 
                 Focus your analysis on:
                 1. Clear presence or absence of malaria parasites
@@ -124,6 +124,7 @@ class GeminiService
                 4. Current stage of the parasite lifecycle if visible
                 5. Detailed findings about parasite morphology and characteristics
                 6. Evidence-based medical recommendations
+                7. Differentiate clearly between malaria parasites and sickle-shaped or other abnormal red blood cells
                 
                 Provide ONLY a JSON response in this exact format:
                 {
@@ -137,6 +138,7 @@ class GeminiService
                 
                 Rules:
                 - Be clinically precise
+                - Avoid confusing sickle-shaped cells or other red blood cell abnormalities with malaria parasites
                 - Express uncertainty with lower confidence scores
                 - Include specific morphological details in findings
                 - Give actionable medical recommendations
@@ -217,6 +219,18 @@ class GeminiService
 
             if (json_last_error() !== JSON_ERROR_NONE) {
                 throw new \Exception('Failed to parse API response: ' . json_last_error_msg());
+            }
+
+            // Override confidence if findings contain sickle cell indicators
+            $sickleCellKeywords = ['amoeboid', 'irregular', 'elongated', 'crescent', 'sickle'];
+            foreach ($sickleCellKeywords as $keyword) {
+                if (strpos(strtolower($analysisData['findings']), $keyword) !== false) {
+                    // Set detection to false and adjust confidence if sickle cell indicators are present
+                    $analysisData['detection'] = false;
+                    $analysisData['confidence'] = min($analysisData['confidence'], 30);  // Cap confidence to reflect uncertainty
+                    $analysisData['findings'] .= " Note: Irregular cell shapes detected could indicate non-parasitic abnormalities, such as sickle cells.";
+                    break;
+                }
             }
 
             return [

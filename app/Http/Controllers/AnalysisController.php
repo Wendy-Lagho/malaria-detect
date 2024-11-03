@@ -163,6 +163,24 @@ class AnalysisController extends Controller
         return redirect()->route('analysis.show', $analysis)
             ->with('success', 'Analysis has been updated after review.');
     }
+    
+    /**
+     * Update an analysis result
+     */
+    public function update(Request $request, Analysis $analysis)
+    {
+        // Validate the incoming request data
+        $request->validate([
+            'result' => 'required|string|in:positive,negative,inconclusive',
+        ]);
+
+        // Update the analysis result
+        $analysis->result = $request->input('result');
+        $analysis->save();
+
+        // Redirect back to the analysis index page with a success message
+        return redirect()->route('analysis.index')->with('status', 'Analysis updated successfully.');
+    }
 
     /**
      * Generate report for an analysis

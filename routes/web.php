@@ -33,6 +33,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/analysis/{analysis}/report', [AnalysisController::class, 'generateReport'])->name('analysis.report');
     Route::get('/analysis/{analysis}/image', [AnalysisController::class, 'downloadImage'])->name('analysis.image');
     Route::delete('/analysis/{analysis}', [AnalysisController::class, 'destroy'])->name('analysis.destroy');
+    Route::put('/analysis/{analysis}', [AnalysisController::class, 'update'])->name('analysis.update');
+
 
     // Reports route
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
