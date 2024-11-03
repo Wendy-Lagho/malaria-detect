@@ -16,26 +16,25 @@ class ReportsController extends Controller
      */
     public function index()
     {
-        $reports = Analysis::where('user_id', Auth::id())
+    $reports = Analysis::where('user_id', Auth::id())
+        ->orderBy('created_at', 'desc')
+        ->paginate(10); 
+
+    $statistics = [
+        'total_reports' => Analysis::where('user_id', Auth::id())
             ->where('report_generated', true)
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->count(),
+        'positive_cases' => Analysis::where('user_id', Auth::id())
+            ->where('result', 'positive')
+            ->where('report_generated', true)
+            ->count(),
+        'negative_cases' => Analysis::where('user_id', Auth::id())
+            ->where('result', 'negative')
+            ->where('report_generated', true)
+            ->count(),
+    ];
 
-        $statistics = [
-            'total_reports' => Analysis::where('user_id', Auth::id())
-                ->where('report_generated', true)
-                ->count(),
-            'positive_cases' => Analysis::where('user_id', Auth::id())
-                ->where('result', 'positive')
-                ->where('report_generated', true)
-                ->count(),
-            'negative_cases' => Analysis::where('user_id', Auth::id())
-                ->where('result', 'negative')
-                ->where('report_generated', true)
-                ->count(),
-        ];
-
-        return view('reports.index', compact('reports', 'statistics'));
+    return view('reports.index', compact('reports', 'statistics'));
     }
 
     /**
@@ -52,53 +51,49 @@ class ReportsController extends Controller
      */
     public function generatePDF(Analysis $analysis)
     {
-        try {
-            abort_if($analysis->user_id !== Auth::id(), 403);
+    try {
+        abort_if($analysis->user_id !== Auth::id(), 403);
 
-            $data = [
-                'analysis' => $analysis,
-                'user' => Auth::user(),
-                'generated_at' => now(),
-            ];
-
-            $pdf = PDF::loadView('reports.pdf', $data);
-            
-            // Generate unique filename
-            $filename = 'report_' . $analysis->id . '_' . time() . '.pdf';
-            $path = 'reports/' . $filename;
-            
-            // Store PDF
-            Storage::put($path, $pdf->output());
-            
-            // Update analysis record
-            $analysis->update([
-                'report_generated' => true,
-                'report_path' => $path
-            ]);
-
-            // Determine response type based on request
-            if (request()->wantsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Report generated successfully',
-                    'download_url' => route('reports.download', $analysis)
-                ]);
-            }
-
-            return response()->download(storage_path('app/' . $path), $filename);
-
-        } catch (\Exception $e) {
-            Log::error('Report generation failed: ' . $e->getMessage());
-            
-            if (request()->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to generate report: ' . $e->getMessage()
-                ], 500);
-            }
-
-            return back()->withErrors(['error' => 'Failed to generate report']);
+        // Decode the result_data if it exists
+        if ($analysis->result_data) {
+            $analysis->result_data = json_decode($analysis->result_data, true);
         }
+
+        $data = [
+            'analysis' => $analysis,
+            'user' => Auth::user(),
+            'generated_at' => now()
+        ];
+
+        $pdf = PDF::loadView('reports.pdf', $data);
+        
+        // Generate unique filename
+        $filename = 'report_' . $analysis->id . '_' . time() . '.pdf';
+        $path = 'reports/' . $filename;
+        
+        // Store PDF
+        Storage::put($path, $pdf->output());
+        
+        // Update analysis record
+        $analysis->update([
+            'report_generated' => true,
+            'report_path' => $path
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Report generated successfully',
+            'download_url' => route('reports.download', $analysis)
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Report generation failed: ' . $e->getMessage());
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to generate report: ' . $e->getMessage()
+        ], 500);
+    }
     }
 
     /**

@@ -269,4 +269,17 @@ class AnalysisController extends Controller
 
     return view('analysis.index', compact('analyses', 'statistics'));
     }
+
+    /**
+     * Download a report for an analysis
+     */
+    public function downloadReport()
+    {
+        $analyses = Analysis::where('user_id', Auth::id())
+            ->where('report_generated', true)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('analysis.download-report', compact('analyses'));
+    }
 }

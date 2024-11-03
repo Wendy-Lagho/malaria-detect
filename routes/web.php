@@ -41,15 +41,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/{analysis}', [ReportsController::class, 'show'])->name('reports.show');
     Route::post('/reports/{analysis}/generate', [ReportsController::class, 'generatePDF'])->name('reports.generate');
     Route::get('/reports/{analysis}/download', [ReportsController::class, 'download'])->name('reports.download');
+    Route::get('/analysis/download-report', [ReportsController::class, 'downloadReport'])->name('analysis.download-report');
+    Route::get('/analysis/download-report', [AnalysisController::class, 'downloadReport'])->name('analysis.download-report');
+
 });
 
-// Logout route
-Route::get('/logout', function () {
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
+// // Logout route
+// Route::get('/logout', function () {
+//     Auth::logout();
+//     request()->session()->invalidate();
+//     request()->session()->regenerateToken();
 
-    return redirect('/login');
-})->name('logout');
+//     return redirect('/login');
+// })->name('logout');
 
 require __DIR__.'/auth.php';

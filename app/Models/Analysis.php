@@ -77,4 +77,8 @@ class Analysis extends Model
 
         return ucfirst($this->result);
     }
+    public function canGenerateReport()
+    {
+    return !$this->report_generated;
+    }
 }

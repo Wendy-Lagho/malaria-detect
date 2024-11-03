@@ -74,10 +74,10 @@
                 <th>Confidence Score:</th>
                 <td>{{ number_format($analysis->confidence_score, 1) }}%</td>
             </tr>
-            <tr>
+            {{-- <tr>
                 <th>Processing Time:</th>
                 <td>{{ $analysis->processing_time_ms }}ms</td>
-            </tr>
+            </tr> --}}
             @if($analysis->confidence_score < 70)
             <tr>
                 <th>Manual Review:</th>
@@ -89,11 +89,19 @@
         @if($analysis->result_data)
         <h3>Detailed Analysis Results</h3>
         <table>
-            @foreach(json_decode($analysis->result_data, true) as $key => $value)
-            <tr>
-                <th>{{ ucfirst(str_replace('_', ' ', $key)) }}:</th>
-                <td>{{ is_bool($value) ? ($value ? 'Yes' : 'No') : $value }}</td>
-            </tr>
+            @foreach($analysis->result_data as $key => $value)
+                <tr>
+                    <th>{{ ucfirst(str_replace('_', ' ', $key)) }}:</th>
+                    <td>
+                        @if(is_bool($value))
+                            {{ $value ? 'Yes' : 'No' }}
+                        @elseif(is_array($value))
+                            {{ implode(', ', $value) }}
+                        @else
+                            {{ $value }}
+                        @endif
+                    </td>
+                </tr>
             @endforeach
         </table>
         @endif
