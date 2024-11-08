@@ -57,20 +57,24 @@ class Analysis extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-    // Modified query methods to support both databases
-    public static function findWithSource($id)
+    
+    public function queryAnalyses($conditions = [])
     {
-        if (static::$useBigQuery) {
-            try {
-                $result = static::getBigQuery()->queryAnalyses(["id = {$id}"]);
-                return $result->first();
-            } catch (\Exception $e) {
-                Log::error("BigQuery find failed: " . $e->getMessage());
-                return static::find($id); // Fallback to MySQL
+        try {
+            $query = "SELECT * FROM `{$this->dataset->id()}.analyses`";
+            if (!empty($conditions)) {
+                $query .= " WHERE " . implode(' AND ', $conditions);
             }
+            $query .= " ORDER BY created_at DESC LIMIT 1000";
+            
+            $queryJobConfig = $this->bigQuery->query($query);
+            $queryResults = $this->bigQuery->runQuery($queryJobConfig);
+            
+            return $queryResults;
+        } catch (\Exception $e) {
+            Log::error("Failed to query analyses: " . $e->getMessage());
+            throw new \Exception("Failed to query analyses: " . $e->getMessage());
         }
-        return static::find($id);
     }
 
     public function scopePositive($query)

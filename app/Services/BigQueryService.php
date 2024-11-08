@@ -4,13 +4,15 @@ namespace App\Services;
 
 use Google\Cloud\BigQuery\BigQueryClient;
 use Google\Cloud\BigQuery\Dataset;
+use Google\Cloud\BigQuery\Table;
 use Illuminate\Support\Facades\Log;
 
 class BigQueryService
 {
     protected $bigQuery;
     protected $dataset;
-    
+    protected $tables = [];
+
     public function __construct()
     {
         $this->bigQuery = new BigQueryClient([
@@ -34,71 +36,73 @@ class BigQueryService
         }
     }
 
-    public function createAnalysesTable()
+    public function getTable(string $tableId): Table
     {
-        $tableId = 'analyses';
-        $schema = [
-            'fields' => [
-                ['name' => 'id', 'type' => 'INTEGER', 'mode' => 'REQUIRED'],
-                ['name' => 'image_path', 'type' => 'STRING', 'mode' => 'REQUIRED'],
-                ['name' => 'result_data', 'type' => 'JSON', 'mode' => 'NULLABLE'],
-                ['name' => 'confidence_score', 'type' => 'FLOAT', 'mode' => 'NULLABLE'],
-                ['name' => 'result', 'type' => 'STRING', 'mode' => 'NULLABLE'],
-                ['name' => 'status', 'type' => 'STRING', 'mode' => 'REQUIRED'],
-                ['name' => 'user_id', 'type' => 'INTEGER', 'mode' => 'NULLABLE'],
-                ['name' => 'processed_at', 'type' => 'TIMESTAMP', 'mode' => 'NULLABLE'],
-                ['name' => 'error_message', 'type' => 'STRING', 'mode' => 'NULLABLE'],
-                ['name' => 'processing_time_ms', 'type' => 'INTEGER', 'mode' => 'NULLABLE'],
-                ['name' => 'report_generated', 'type' => 'BOOLEAN', 'mode' => 'REQUIRED'],
-                ['name' => 'report_path', 'type' => 'STRING', 'mode' => 'NULLABLE'],
-                ['name' => 'created_at', 'type' => 'TIMESTAMP', 'mode' => 'REQUIRED'],
-                ['name' => 'updated_at', 'type' => 'TIMESTAMP', 'mode' => 'REQUIRED'],
-                ['name' => 'deleted_at', 'type' => 'TIMESTAMP', 'mode' => 'NULLABLE'],
-            ]
-        ];
+        if (isset($this->tables[$tableId])) {
+            return $this->tables[$tableId];
+        }
 
         try {
-            $tableExists = $this->dataset->table($tableId)->exists();
-            if (!$tableExists) {
-                $this->dataset->createTable($tableId, ['schema' => $schema]);
-            }
-            return $this->dataset->table($tableId);
+            $this->tables[$tableId] = $this->dataset->table($tableId);
         } catch (\Exception $e) {
-            Log::error("Failed to create analyses table: " . $e->getMessage());
-            throw new \Exception("Failed to create analyses table: " . $e->getMessage());
+            Log::error("Failed to get table $tableId: " . $e->getMessage());
+            throw new \Exception("Failed to get table $tableId: " . $e->getMessage());
         }
+
+        return $this->tables[$tableId];
+    }
+
+    public function createAnalysesTable()
+    {
+        return $this->createTable('analyses', [
+            ['name' => 'id', 'type' => 'INTEGER', 'mode' => 'REQUIRED'],
+            ['name' => 'image_path', 'type' => 'STRING', 'mode' => 'REQUIRED'],
+            ['name' => 'result_data', 'type' => 'JSON', 'mode' => 'NULLABLE'],
+            ['name' => 'confidence_score', 'type' => 'FLOAT', 'mode' => 'NULLABLE'],
+            ['name' => 'result', 'type' => 'STRING', 'mode' => 'NULLABLE'],
+            ['name' => 'status', 'type' => 'STRING', 'mode' => 'REQUIRED'],
+            ['name' => 'user_id', 'type' => 'INTEGER', 'mode' => 'NULLABLE'],
+            ['name' => 'processed_at', 'type' => 'TIMESTAMP', 'mode' => 'NULLABLE'],
+            ['name' => 'error_message', 'type' => 'STRING', 'mode' => 'NULLABLE'],
+            ['name' => 'processing_time_ms', 'type' => 'INTEGER', 'mode' => 'NULLABLE'],
+            ['name' => 'report_generated', 'type' => 'BOOLEAN', 'mode' => 'REQUIRED'],
+            ['name' => 'report_path', 'type' => 'STRING', 'mode' => 'NULLABLE'],
+            ['name' => 'created_at', 'type' => 'TIMESTAMP', 'mode' => 'REQUIRED'],
+            ['name' => 'updated_at', 'type' => 'TIMESTAMP', 'mode' => 'REQUIRED'],
+            ['name' => 'deleted_at', 'type' => 'TIMESTAMP', 'mode' => 'NULLABLE'],
+        ]);
     }
 
     public function createUsersTable()
     {
-        $tableId = 'users';
-        $schema = [
-            'fields' => [
-                ['name' => 'id', 'type' => 'INTEGER', 'mode' => 'REQUIRED'],
-                ['name' => 'name', 'type' => 'STRING', 'mode' => 'REQUIRED'],
-                ['name' => 'email', 'type' => 'STRING', 'mode' => 'REQUIRED'],
-                ['name' => 'created_at', 'type' => 'TIMESTAMP', 'mode' => 'REQUIRED'],
-                ['name' => 'updated_at', 'type' => 'TIMESTAMP', 'mode' => 'REQUIRED'],
-                ['name' => 'deleted_at', 'type' => 'TIMESTAMP', 'mode' => 'NULLABLE'],
-            ]
-        ];
+        return $this->createTable('users', [
+            ['name' => 'id', 'type' => 'INTEGER', 'mode' => 'REQUIRED'],
+            ['name' => 'name', 'type' => 'STRING', 'mode' => 'REQUIRED'],
+            ['name' => 'email', 'type' => 'STRING', 'mode' => 'REQUIRED'],
+            ['name' => 'created_at', 'type' => 'TIMESTAMP', 'mode' => 'REQUIRED'],
+            ['name' => 'updated_at', 'type' => 'TIMESTAMP', 'mode' => 'REQUIRED'],
+            ['name' => 'deleted_at', 'type' => 'TIMESTAMP', 'mode' => 'NULLABLE'],
+        ]);
+    }
 
+    private function createTable(string $tableId, array $schema): Table
+    {
         try {
-            $tableExists = $this->dataset->table($tableId)->exists();
-            if (!$tableExists) {
-                $this->dataset->createTable($tableId, ['schema' => $schema]);
+            $table = $this->getTable($tableId);
+            if (!$table->exists()) {
+                $this->dataset->createTable($tableId, ['schema' => ['fields' => $schema]]);
             }
-            return $this->dataset->table($tableId);
+            return $table;
         } catch (\Exception $e) {
-            Log::error("Failed to create users table: " . $e->getMessage());
-            throw new \Exception("Failed to create users table: " . $e->getMessage());
+            Log::error("Failed to create table $tableId: " . $e->getMessage());
+            throw new \Exception("Failed to create table $tableId: " . $e->getMessage());
         }
     }
 
     public function insertAnalysis(array $data)
     {
         try {
-            $table = $this->dataset->table('analyses');
+            $table = $this->getTable('analyses');
             return $table->insertRows([
                 ['data' => $data]
             ]);
@@ -127,17 +131,63 @@ class BigQueryService
 
     public function batchInsertAnalyses(array $records)
     {
-    $rows = [];
-    foreach ($records as $record) {
-        $rows[] = [
-            'data' => $record,
-            'insertId' => (string) $record['id'] // Prevent duplicate insertions
-        ];
+        $table = $this->getTable('analyses');
+        $rows = [];
+        foreach ($records as $record) {
+            $rows[] = [
+                'data' => $record,
+                'insertId' => (string) $record['id'] // Prevent duplicate insertions
+            ];
+        }
+
+        return $table->insertRows($rows, [
+            'ignoreUnknownValues' => true,
+            'skipInvalidRows' => false
+        ]);
     }
 
-    return $this->dataset->table('analyses')->insertRows($rows, [
-        'ignoreUnknownValues' => true,
-        'skipInvalidRows' => false
-    ]);
+    public function getTableCount(string $tableId): int
+    {
+        $table = $this->getTable($tableId);
+        $query = $this->bigQuery->query("SELECT COUNT(*) as count FROM `{$this->dataset->id()}.$tableId`");
+        $queryResults = $this->bigQuery->runQuery($query);
+        foreach ($queryResults as $row) {
+            return (int) $row['count'];
+        }
+        return 0;
     }
+    public function batchInsertUsers(array $userData)
+    {
+        $tableId = 'users'; // Explicitly use 'users' table ID
+        $table = $this->getTable($tableId); // Get the table object
+
+        try {
+            // Prepare the data for insertion
+            $rows = array_map(function ($user) {
+                return [
+                    'json' => $user,
+                ];
+            }, $userData);
+
+            // Insert the data into BigQuery
+            $insertResponse = $table->insertRows($rows);
+
+            // Check if insert operation was successful
+            if ($insertResponse->isSuccessful()) {
+                return $insertResponse;
+            }
+
+            // If there were errors, log them and throw an exception
+            foreach ($insertResponse->failedRows() as $failedRow) {
+                Log::error("Failed to insert user row: " . json_encode($failedRow['json']));
+            }
+
+            return $insertResponse;
+
+        } catch (\Exception $e) {
+            Log::error("Error during batch insert for users: " . $e->getMessage());
+            throw $e;
+        }
+}
+
 }
