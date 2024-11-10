@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AnalysisController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Chart\BarController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -44,15 +45,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/analysis/download-report', [ReportsController::class, 'downloadReport'])->name('analysis.download-report');
     Route::get('/analysis/download-report', [AnalysisController::class, 'downloadReport'])->name('analysis.download-report');
 
+    // Chart routes
+    Route::get('/chart/bar', [BarController::class, 'getAnalysisData'])->name('chart.bar');
+    Route::get('/chart/analysis-data', [BarController::class, 'getAnalysisData']);
+
+
 });
-
-// // Logout route
-// Route::get('/logout', function () {
-//     Auth::logout();
-//     request()->session()->invalidate();
-//     request()->session()->regenerateToken();
-
-//     return redirect('/login');
-// })->name('logout');
 
 require __DIR__.'/auth.php';

@@ -1,43 +1,48 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-# Malaria Detection AI
+# Malaria Detection AI - Gemini Flash
 
 ## 🚀 Quick Demo
 [Link to 3-minute video]
 
 ## 💡 Problem Statement
-Kenya, faces challenges in timely and accurate medical diagnoses, especially in rural areas with limited access to specialized healthcare professionals. This often leads to delayed treatments and adverse health outcomes.
-Solution: Develop a web that utilizes AI to analyze microscopic images of blood smears to detect malaria parasites.
+Malaria remains a significant health issue in regions like Kenya, where access to timely and accurate diagnostics is challenging, particularly in remote areas. The shortage of specialized medical professionals further complicates the situation, often delaying diagnosis and treatment, which can lead to severe health consequences.
+
+**Solution**: Malaria Detection AI is a web-based solution that leverages AI to analyze microscopic images of blood smears, detecting malaria parasites quickly and accurately. This tool empowers rural clinics with efficient diagnostic capabilities, even with limited resources.
 
 ## 🛠 Technical Implementation
-- Image Analysis Pipeline
-- Offline Support
-- Environmental Correlation
-- SMS Integration
 
-## 🎯 Impact
-- Rural Healthcare Access
-- Quick Diagnosis
-- Cost Reduction
+### Key Technologies
+- **Framework**: Laravel 11 with Laravel Breeze for authentication
+- **AI Model**: Gemini Flash AI for malaria parasite detection in blood smear images
+- **Data Migration**: Integrated with Google BigQuery for scalable data storage and analytics
+<!-- - **Local and Remote Access**: Exposed locally via ngrok for easy testing and external access -->
+
+## 🎯 Project Impact
+- **Improved Access to Diagnosis**: Brings AI-driven diagnostics to remote areas with limited medical resources
+- **Rapid Turnaround**: Reduces diagnosis time, enabling prompt treatment
+- **Cost-Efficiency**: Provides an affordable diagnostic tool that minimizes the need for highly specialized equipment
+
 
 ## 🏗 Architecture
 [Include system architecture diagram]
 
-## 📱 Features
-[List and screenshots of key features]
+## 📱 Features Overview
+- **AI-based Analysis**: Accurate detection and diagnosis powered by Gemini Flash AI
+- **BigQuery Integration**: Scalable, secure storage for analysis and reporting
+- **User-Friendly Interface**: Intuitive design focused on ease of use in clinical settings
+- **Real-Time Notifications**: SMS alerts for diagnosis updates
+
 
 ## 🔬 Technical Deep-Dive
-[Detailed technical explanation]
+This section explains the technical flow, including the image processing pipeline, BigQuery data management, and the integration of Gemini Flash AI. [Add further details or link to documentation]
+
 
 ## 📊 Results & Impact
-[Include metrics and potential impact]
+[Include any performance metrics, case studies, or anticipated impact on health outcomes]
+
 
 ## License
 

@@ -1,12 +1,15 @@
 <x-app-layout>
 
     @section('title', 'Dashboard')
+    
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Main Content -->
             <div class="py-6">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <!-- Dashboard Header -->
                     <div class="mb-8">
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
                         <h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
                         <p class="mt-1 text-sm text-gray-600">
                             Welcome to the Malaria Detection System
@@ -111,6 +114,12 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- BAR CHART--}}
+                    <div class="chart-container">
+                        <canvas id="analysisTrendsChart"></canvas>
+                    </div>
+                    
 
                     <!-- Recent Analyses -->
                     <div class="bg-white shadow rounded-lg mb-8">
@@ -222,12 +231,73 @@
 
     @push('scripts')
     <script>
-        // Add any dashboard-specific JavaScript here
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize any dashboard components
-            console.log('Dashboard initialized');
+        document.addEventListener("DOMContentLoaded", function() {
+            // PHP data from trends
+            const trendData = @json($trends);
+    
+            // Extract labels and data
+            const labels = trendData.map(item => item.date);
+            const totalCases = trendData.map(item => item.total);
+            const positiveCases = trendData.map(item => item.positive_cases);
+    
+            const ctx = document.getElementById('analysisTrendsChart').getContext('2d');
+            const analysisTrendsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Total Cases',
+                            data: totalCases,
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Positive Cases',
+                            data: positiveCases,
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                        {
+                            label: 'Pending Analyses',
+                            data: pendingAnalyses,
+                            backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }
+                        {
+                            label: 'Success Rate',
+                            data: successRate,
+                            backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                            borderColor: 'rgba(255, 206, 86, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Cases'
+                            }
+                        }
+                    }
+                }
+            });
         });
     </script>
+    
     @endpush
 
 </x-app-layout>
