@@ -1,7 +1,7 @@
 
-<p align="center">
-  <img src="images/malaria-detection.jpg" alt="Malaria Detection AI" width="200">
-</p>
+  <!-- <img src="images/malaria-detection.jpg" alt="Malaria Detection AI" width="200"> -->
+  ![Malaria Detection AI](public/images/malaria-detection.jpg)
+
 
 # Malaria Detection AI - Gemini Flash
 
