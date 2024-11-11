@@ -1,14 +1,15 @@
 
-  <!-- <img src="images/malaria-detection.jpg" alt="Malaria Detection AI" width="200"> -->
-  ![Malaria Detection AI](public/images/malaria-detection.jpg)
-
+<!-- <img src="images/malaria-detection.jpg" alt="Malaria Detection AI" width="200"> -->
+![Malaria Detection AI](public/images/malaria-detection.jpg)
 
 # Malaria Detection AI - Gemini Flash
 
 ## 🚀 Quick Demo
+
 [Watch a 3-Minute Video](https://youtu.be/w43x7AQngiw) showcasing Malaria Detection AI in action.
 
 ## 💡 Problem Statement
+
 Malaria remains a significant health issue in regions like Kenya, where access to timely and accurate diagnostics is challenging, particularly in remote areas. The shortage of specialized medical professionals further complicates the situation, often delaying diagnosis and treatment, which can lead to severe health consequences.
 
 **Solution**: Malaria Detection AI is a web-based solution that leverages AI to analyze microscopic images of blood smears, detecting malaria parasites quickly and accurately. This tool empowers rural clinics with efficient diagnostic capabilities, even with limited resources.
@@ -16,6 +17,7 @@ Malaria remains a significant health issue in regions like Kenya, where access t
 ## 🛠 Technical Implementation
 
 ### Technical Flow
+
 The technical flow of Malaria Detection AI is divided into three core stages: **Image Processing Pipeline**, **Data Management with BigQuery**, and **Integration with Gemini Flash AI**.
 
 #### 1. **Image Processing Pipeline**
@@ -35,12 +37,14 @@ The technical flow of Malaria Detection AI is divided into three core stages: **
 Together, these components form the backbone of a robust, scalable malaria detection system, using cutting-edge AI for impactful healthcare applications.
 
 ### Key Technologies
+
 - **Framework**: Laravel 11 with Laravel Breeze for authentication
 - **AI Model**: Gemini Flash AI for malaria parasite detection in blood smear images
 - **Data Migration**: Integrated with MySQL and Google BigQuery for scalable data storage
 <!-- - **Local and Remote Access**: Exposed locally via ngrok for easy testing and external access -->
 
 ## 🎯 Project Impact
+
 - **Increased Diagnostic Access**: Extends diagnostic capabilities to remote, underserved areas.
 - **Reduced Diagnosis Time**: Accelerates diagnosis, supporting prompt treatment.
 - **Affordable Solution**: Minimizes the need for expensive diagnostic equipment, making it more accessible to low-resource settings.
@@ -49,12 +53,12 @@ Together, these components form the backbone of a robust, scalable malaria detec
 <!-- ## 🏗 Architecture -->
 
 ## 📱 Features Overview
+
 - **AI-based Analysis**: Accurate detection and diagnosis powered by Gemini Flash AI
 - **BigQuery Integration**: Scalable, secure storage for analysis and reporting
 - **MySQL Intergration**: Backup data storage
 - **User-Friendly Interface**: Intuitive design focused on ease of use in clinical settings
 <!-- - **Real-Time Notifications**: SMS alerts for diagnosis updates -->
-
 
 <!-- ## 🔬 Technical Deep-Dive
 
@@ -84,12 +88,15 @@ Together, these components form the backbone of a robust, scalable malaria detec
 
 
 ## 📊 Results & Impact
+
 ### Results
+
 - **Performance**: The system achieves high accuracy in identifying malaria parasites, using Gemini Flash AI’s model tuned to recognize malaria patterns even in lower-quality images.
 - **Efficiency**: With Gemini Flash’s optimizations, the platform delivers analysis results quickly, enabling faster medical response times.
 - **Data Management**: Through BigQuery and MySQL as backup, analysis data is stored, retrieved, and queried efficiently, providing valuable insights that can guide healthcare decisions and public health monitoring.
 
 ### Projected Impact
+
 The Malaria Detection AI project has the potential to improve healthcare outcomes in regions with limited diagnostic resources. By offering an accessible diagnostic tool, it addresses key challenges in malaria detection, such as the scarcity of trained personnel and the need for quick, reliable diagnosis. This can contribute to reducing malaria incidence rates, supporting timely treatment, and enabling proactive public health strategies.
 
 The platform has ability to process large datasets with BigQuery enables valuable trend analysis. This data can inform regional healthcare efforts, supporting broader malaria eradication programs.
@@ -99,33 +106,43 @@ The platform has ability to process large datasets with BigQuery enables valuabl
 To set up and run the *Malaria Detection AI* platform locally, follow these steps:
 
 ### Prerequisites
+
 - **PHP** (v8+)
 - **Composer** for Laravel dependencies
 - **MySQL** (or other supported DB)
 - **Google Cloud SDK** for BigQuery integration
 
 ### Steps
+
 1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/your-username/malaria-detection-ai.git
-   cd malaria-detection-ai
-   ```
+
+  ```bash
+  git clone https://github.com/your-username/malaria-detection-ai.git
+  cd malaria-detection-ai
+  ```
+  
 2. **Install Dependencies**: Install both PHP and JavaScript dependencies.
+
   ```bash
   composer install
   npm install && npm run dev
   ```
+
 3. **Configure Environment**: Copy ``.env.example`` to ``.env`` and configure the following:
+
   ```bash
   GOOGLE_CLOUD_PROJECT_ID=your_project_id
   GOOGLE_APPLICATION_CREDENTIALS=path_to_your_credentials.json
   USE_BIGQUERY=true
   ```
-4. **Run Migrations**: 
+
+4. **Run Migrations**:
+
   ```bash
   php artisan migrate
   ```
 5. **Serve the Application**:
+
   ```bash
   php artisan serve
   ```
@@ -137,21 +154,26 @@ To set up and run the *Malaria Detection AI* platform locally, follow these step
 3. **View Diagnostic Results**: Access detailed diagnostic reports and data insights directly within the application, providing fast and actionable information.
 
 ## 🏆 Accomplishments
+
 - Developed an operational AI-powered malaria detection platform tailored for real-world use.
 - Successfully integrated Google BigQuery for scalable data handling and analysis.
 - Designed an intuitive and user-friendly interface, making it accessible to healthcare professionals in clinical environments.
 
 ## 🧠 Lessons Learned
+
 - Gained in-depth knowledge of deploying AI models in healthcare applications and managing datasets with Google BigQuery.
 - Strengthened skills in integrating Laravel with external AI services and developing scalable, cloud-based systems.
 
 ## 🔮 What's Next for Malaria Detect
+
 - **Enhanced Model Training**: Plan to further refine the AI model for improved accuracy in diverse image conditions.
 - **Notification System**: Implement real-time notification features, such as SMS or email alerts, for rapid diagnosis updates.
 - **Mobile Compatibility**: Explore development of a mobile-friendly version to extend accessibility and usability.
 
 ## 🤝 Acknowledgments
+
 Acknowledgments also to Google Cloud for providing resources and tools that made this project possible.
 
 ## 📜 License
+
 This project is open-source and licensed under the [MIT License](https://opensource.org/licenses/MIT).
