@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+{{-- <!DOCTYPE html> --}}
+{{-- <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -173,4 +173,187 @@
             </div>
         </div>
     </body>
-</html>
+</html> --}}
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>MalariaDetect AI</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            body {
+                font-family: 'Inter', sans-serif;
+            }
+            .background-section {
+                background-image: url('{{ asset("images/malaria-detection.jpg") }}');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                position: relative;
+                color: white;
+            }
+
+            .background-section::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.7); /* Increase opacity for a darker overlay */
+                z-index: 1;
+            }
+
+            .background-section .grid {
+                position: relative;
+                z-index: 2; /* Ensures the text appears above the overlay */
+            }
+            .background-section h1,
+            .background-section p {
+                color: #f0f8ff;
+                text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5); /* Adds a shadow to improve contrast */
+                z-index: 2;
+            }
+        </style>
+    </head>
+
+    <body class="bg-gray-100">
+        <!-- Navbar with authentication links -->
+        <nav class="bg-white p-6 shadow">
+            <div class="container mx-auto flex justify-between items-center">
+                <div class="text-lg font-semibold text-gray-700">
+                    <a href="{{ url('/') }}">MalariaDetect AI</a>
+                </div>
+                <div>
+                    @if (Route::has('login'))
+                        <div class="flex space-x-4">
+                            @auth
+                                <a href="{{ url('/dashboard') }}" class="font-semibold text-gray-600 hover:text-gray-900">Dashboard</a>
+                            @else
+                                <a href="{{ route('login') }}" class="font-semibold text-gray-600 hover:text-gray-900">Sign In</a>
+                                
+                                @if (Route::has('register'))
+                                    <a href="{{ route('register') }}" class="font-semibold text-gray-600 hover:text-gray-900">Sign Up</a>
+                                @endif
+                            @endauth
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main content section -->
+        <div class="container mx-auto px-4 py-12 sm:py-20 background-section">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div class="flex flex-col justify-center text-white">
+                    <h1 class="text-4xl sm:text-5xl font-bold mb-4">
+                        Empowering Rural Healthcare with AI-Powered Malaria Detection
+                    </h1>
+                    <p class="text-lg mb-8">
+                        MalariaDetect AI is a groundbreaking solution that leverages cutting-edge machine learning to accurately diagnose malaria in rural communities across Kenya. By putting this powerful technology into the hands of healthcare providers, we're revolutionizing the fight against this deadly disease.
+                    </p>
+                    <a href="{{ route('analysis.create') }}" class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </div>        
+
+        <div class="bg-white py-12 sm:py-20">
+            <div class="container mx-auto px-4">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="flex flex-col items-center text-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <h3 class="text-xl font-semibold text-gray-900 mb-2">Accurate Diagnosis</h3>
+                  <p class="text-gray-700">Our AI-powered solution delivers reliable and precise malaria detection, empowering healthcare providers to make informed decisions.</p>
+                </div>
+                <div class="flex flex-col items-center text-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <h3 class="text-xl font-semibold text-gray-900 mb-2">Rapid Results</h3>
+                  <p class="text-gray-700">Our solution provides real-time analysis, enabling healthcare providers to quickly identify and treat malaria cases.</p>
+                </div>
+                <div class="flex flex-col items-center text-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 112-2" />
+                  </svg>
+                  <h3 class="text-xl font-semibold text-gray-900 mb-2">Accessible to All</h3>
+                  <p class="text-gray-700">Our solution is designed to be easily integrated into existing healthcare systems, ensuring accessibility for rural communities.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="bg-gray-100 py-12 sm:py-20">
+            <div class="container mx-auto px-4">
+              <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-8 text-center">
+                How it Works
+              </h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div>
+                  <img src="{{ asset('images/malaria-testing.jpg') }}" alt="Malaria Testing" class="rounded-lg shadow-lg">
+                </div>
+                <div class="flex flex-col justify-center">
+                  <h3 class="text-2xl font-semibold text-gray-900 mb-4">
+                    Streamlined Malaria Detection
+                  </h3>
+                  <p class="text-gray-700 mb-6">
+                    MalariaDetect AI seamlessly integrates with existing healthcare workflows, allowing healthcare providers to quickly upload patient samples and receive accurate malaria diagnosis results.
+                  </p>
+                  <ol class="list-decimal pl-6 text-gray-700 space-y-4">
+                    <li>Healthcare provider collects patient sample</li>
+                    <li>Sample is securely uploaded to MalariaDetect AI</li>
+                    <li>AI-powered analysis is performed in real-time</li>
+                    <li>Diagnosis results are instantly delivered</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <div class="bg-white py-12 sm:py-20">
+            <div class="container mx-auto px-4">
+              <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-8 text-center">
+                Join the Fight Against Malaria
+              </h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div class="flex flex-col justify-center">
+                  <p class="text-gray-700 mb-6">
+                    MalariaDetect AI is making a real difference in the lives of people in rural Kenya. By partnering with us, you can help expand access to reliable, AI-powered malaria detection and save lives.
+                  </p>
+                  <a href="{{ route('analysis.create') }}" class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Get Started
+                  </a>
+                </div>
+                <div>
+                  <img src="{{ asset('images/rural-healthcare.jpeg') }}" alt="Rural Healthcare" class="rounded-lg shadow-lg">
+                </div>
+              </div>
+            </div>
+          </div>
+        
+          <footer class="bg-gray-900 text-white py-8">
+            <div class="container mx-auto px-4">
+              <div class="flex flex-col md:flex-row items-center justify-between">
+                <p class="text-sm">&copy; {{ date('Y') }} MalariaDetect AI. All rights reserved.</p>
+                <nav class="mt-4 md:mt-0">
+                  <ul class="flex space-x-4">
+                    <li><a href="#" class="text-sm hover:text-gray-400">About</a></li>
+                    <li><a href="#" class="text-sm hover:text-gray-400">Documentation</a></li>
+                    <li><a href="#" class="text-sm hover:text-gray-400">Contact</a></li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </footer>
+        </body>
+        </html>

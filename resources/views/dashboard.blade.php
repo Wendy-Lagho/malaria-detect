@@ -231,73 +231,74 @@
 
     @push('scripts')
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // PHP data from trends
-            const trendData = @json($trends);
+    document.addEventListener("DOMContentLoaded", function() {
+        // PHP data from trends
+        const trendData = @json($trends);
     
-            // Extract labels and data
-            const labels = trendData.map(item => item.date);
-            const totalCases = trendData.map(item => item.total);
-            const positiveCases = trendData.map(item => item.positive_cases);
+        // Extract labels and data
+        const labels = trendData.map(item => item.date);
+        const totalCases = trendData.map(item => item.total);
+        const positiveCases = trendData.map(item => item.positive_cases);
+        const pendingAnalyses = trendData.map(item => item.pending_analyses);
+        const successRate = trendData.map(item => item.success_rate);
     
-            const ctx = document.getElementById('analysisTrendsChart').getContext('2d');
-            const analysisTrendsChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Total Cases',
-                            data: totalCases,
-                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Positive Cases',
-                            data: positiveCases,
-                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
+        const ctx = document.getElementById('analysisTrendsChart').getContext('2d');
+        const analysisTrendsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Total Cases',
+                        data: totalCases,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Positive Cases',
+                        data: positiveCases,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Pending Analyses',
+                        data: pendingAnalyses,
+                        backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Success Rate',
+                        data: successRate,
+                        backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date'
                         }
-                        {
-                            label: 'Pending Analyses',
-                            data: pendingAnalyses,
-                            backgroundColor: 'rgba(153, 102, 255, 0.6)',
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            borderWidth: 1
-                        }
-                        {
-                            label: 'Success Rate',
-                            data: successRate,
-                            backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                            borderColor: 'rgba(255, 206, 86, 1)',
-                            borderWidth: 1
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Date'
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Number of Cases'
-                            }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Cases'
                         }
                     }
                 }
-            });
+            }
         });
+    });
     </script>
-    
     @endpush
 
 </x-app-layout>

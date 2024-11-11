@@ -17,17 +17,17 @@ class DashboardController extends Controller
         // Get positive cases (completed analyses with high confidence positive results)
         $positiveCases = Analysis::where('status', 'completed')
             ->where('result', 'positive')
-            ->where('confidence_score','>=', 70)
+            ->where('confidence_score', '>=', 70)
             ->count();
 
         // Get pending analyses (including those marked as inconclusive due to low confidence)
         $pendingAnalyses = Analysis::where(function($query) {
             $query->where('status', 'pending')
-                  ->orWhere('status', 'processing')
-                  ->orWhere(function($q) {
-                      $q->where('status', 'completed')
+                ->orWhere('status', 'processing')
+                ->orWhere(function($q) {
+                    $q->where('status', 'completed')
                         ->where('confidence_score', '<', 70);
-                  });
+                });
         })->count();
 
         // Calculate success rate (completed analyses with high confidence)
@@ -55,7 +55,9 @@ class DashboardController extends Controller
         $trends = Analysis::select(
             DB::raw('DATE(created_at) as date'),
             DB::raw('COUNT(*) as total'),
-            DB::raw('SUM(CASE WHEN result = "positive" AND confidence_score >= 70 THEN 1 ELSE 0 END) as positive_cases')
+            DB::raw('SUM(CASE WHEN result = "positive" AND confidence_score >= 70 THEN 1 ELSE 0 END) as positive_cases'),
+            DB::raw('SUM(CASE WHEN status IN ("pending", "processing") OR (status = "completed" AND confidence_score < 70) THEN 1 ELSE 0 END) as pending_analyses'),
+            DB::raw('ROUND(SUM(CASE WHEN status = "completed" AND confidence_score >= 70 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) as success_rate')
         )
             ->where('created_at', '>=', Carbon::now()->subDays(7))
             ->groupBy('date')
