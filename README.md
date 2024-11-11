@@ -1,12 +1,12 @@
 
 <p align="center">
-  <img src="{{ asset('images/malaria-detection.jpg') }}" alt="Malaria Detection AI" width="200">
+  <img src="images/malaria-detection.jpg" alt="Malaria Detection AI" width="200">
 </p>
 
 # Malaria Detection AI - Gemini Flash
 
 ## 🚀 Quick Demo
-[Watch a 3-Minute Video] (https://youtu.be/w43x7AQngiw) showcasing Malaria Detection AI in action.
+[Watch a 3-Minute Video](https://youtu.be/w43x7AQngiw) showcasing Malaria Detection AI in action.
 
 ## 💡 Problem Statement
 Malaria remains a significant health issue in regions like Kenya, where access to timely and accurate diagnostics is challenging, particularly in remote areas. The shortage of specialized medical professionals further complicates the situation, often delaying diagnosis and treatment, which can lead to severe health consequences.
