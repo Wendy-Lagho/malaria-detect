@@ -117,8 +117,8 @@ To set up and run the *Malaria Detection AI* platform locally, follow these step
 1. **Clone the Repository**:
 
   ```bash
-  git clone https://github.com/your-username/malaria-detection-ai.git
-  cd malaria-detection-ai
+  git clone https://github.com/Wendy-Lagho/malaria-detect.git
+  cd malaria-detect
   ```
   
 2. **Install Dependencies**: Install both PHP and JavaScript dependencies.
