@@ -172,7 +172,7 @@ To set up and run the *Malaria Detection AI* platform locally, follow these step
 
 ## 🤝 Acknowledgments
 
-Acknowledgments also to Google Cloud for providing resources and tools that made this project possible.
+Acknowledgments to Google Cloud for providing resources and tools that made this project possible.
 
 ## 📜 License
 
